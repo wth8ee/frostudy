@@ -14,5 +14,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  trustedOrigins: ["https://vercel.app", `https://${process.env.VERCEL_URL}`],
   plugins: [nextCookies()],
 });
