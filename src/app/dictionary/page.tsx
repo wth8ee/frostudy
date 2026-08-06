@@ -43,22 +43,31 @@ export default async function DictionaryPage() {
           </div>
           <h2 className="text-2xl font-bold">Ваш словарь пуст</h2>
           <p className="text-muted-foreground max-w-md">
-            Начните добавлять слова, чтобы пополнить свой словарный запас. Они автоматически появятся в ваших ежедневных сеансах повторения.
+            Начните добавлять слова, чтобы пополнить свой словарный запас. Они
+            автоматически появятся в ваших ежедневных сеансах повторения.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {words.map((word) => (
-            <Card key={word.id} className="border-2 border-border/50 hover:border-primary/50 transition-colors">
+          {words.map((word: any) => (
+            <Card
+              key={word.id}
+              className="border-2 border-border/50 hover:border-primary/50 transition-colors"
+            >
               <CardContent className="p-5 flex flex-col h-full">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold">{word.word}</h3>
-                  <div className="flex items-center text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md" title="Следующее повторение">
+                  <div
+                    className="flex items-center text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-md"
+                    title="Следующее повторение"
+                  >
                     <Clock className="w-3 h-3 mr-1" />
                     {new Date(word.nextReview).toLocaleDateString()}
                   </div>
                 </div>
-                <p className="text-primary font-bold mb-4">{word.translation}</p>
+                <p className="text-primary font-bold mb-4">
+                  {word.translation}
+                </p>
                 {word.example && (
                   <div className="mt-auto pt-3 border-t text-sm text-muted-foreground italic">
                     "{word.example}"
