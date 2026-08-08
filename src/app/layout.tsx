@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ColorThemeProvider>
             <TooltipProvider>
             <Navbar />
-            <main className="flex-1 w-full max-w-4xl mx-auto p-4 md:p-8 flex flex-col">
+            <main className="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-6 md:p-8 flex flex-col">
               {children}
             </main>
           </TooltipProvider>

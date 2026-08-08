@@ -9,6 +9,7 @@ export const auth = betterAuth({
   }),
   baseURL:
     process.env.BETTER_AUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
     `https://${process.env.VERCEL_URL}` ||
     "http://localhost:3000",
   emailAndPassword: {
@@ -16,8 +17,12 @@ export const auth = betterAuth({
   },
   trustedOrigins: [
     "http://localhost:3000",
-    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    // Постоянный домен (добавьте NEXT_PUBLIC_APP_URL в Vercel env vars)
     ...(process.env.NEXT_PUBLIC_APP_URL ? [process.env.NEXT_PUBLIC_APP_URL] : []),
+    // URL конкретного деплоя (автоматически меняется)
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    // URL ветки (preview deployments)
+    ...(process.env.VERCEL_BRANCH_URL ? [`https://${process.env.VERCEL_BRANCH_URL}`] : []),
   ],
   plugins: [nextCookies()],
 });

@@ -102,6 +102,8 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    min-width: 300px;
+    overflow-x: hidden;
   }
 }
 
