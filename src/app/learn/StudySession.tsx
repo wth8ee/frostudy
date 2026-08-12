@@ -32,6 +32,16 @@ export function StudySession({ words }: StudySessionProps) {
 
   const currentWord = words[currentIndex];
 
+  const formatInterval = (minutes: number) => {
+    if (minutes < 60) return `${Math.max(1, minutes)} мин`;
+    if (minutes < 1440) return `${Math.round(minutes / 60)} ч`;
+    const days = Math.round(minutes / 1440);
+    if (days < 30) return `${days} дн`;
+    const months = Math.round(days / 30);
+    if (months < 12) return `${months} мес`;
+    return `${Math.round(days / 365)} г`;
+  };
+
   const handleReview = async (rating: 1 | 2 | 3 | 4) => {
     setLoading(true);
     try {
@@ -54,7 +64,7 @@ export function StudySession({ words }: StudySessionProps) {
           </div>
         )}
         
-        <div className="text-6xl font-black text-foreground mb-8 tracking-tight">
+        <div className="text-4xl sm:text-5xl md:text-6xl font-black text-foreground mb-8 tracking-tight break-words px-4 w-full text-center">
           {currentWord.word}
         </div>
         
@@ -87,44 +97,44 @@ export function StudySession({ words }: StudySessionProps) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 animate-in slide-in-from-bottom-4 fade-in duration-300">
           <Button 
             variant="outline" 
-            className="h-20 flex flex-col items-center justify-center rounded-2xl border-2 border-destructive/20 hover:border-destructive hover:bg-destructive/10 text-destructive font-bold transition-all hover:scale-[1.02]"
+            className="h-20 flex flex-col items-center justify-center rounded-2xl border-2 border-destructive/30 hover:border-destructive hover:bg-destructive/10 text-foreground transition-all hover:scale-[1.02]"
             onClick={() => handleReview(1)}
             disabled={loading}
           >
-            <span className="text-lg">Снова</span>
-            <span className="text-xs opacity-70 mt-1">&lt; 1 мин</span>
+            <span className="text-lg font-bold">Снова</span>
+            <span className="text-xs text-muted-foreground mt-1">1 мин</span>
           </Button>
           <Button 
             variant="outline" 
-            className="h-20 flex flex-col items-center justify-center rounded-2xl border-2 border-orange-500/20 hover:border-orange-500 hover:bg-orange-500/10 text-orange-600 font-bold transition-all hover:scale-[1.02]"
+            className="h-20 flex flex-col items-center justify-center rounded-2xl border-2 border-orange-500/30 hover:border-orange-500 hover:bg-orange-500/10 text-foreground transition-all hover:scale-[1.02]"
             onClick={() => handleReview(2)}
             disabled={loading}
           >
-            <span className="text-lg">Трудно</span>
-            <span className="text-xs opacity-70 mt-1">
-              {currentWord.interval === 0 ? "1 дн." : `${Math.max(1, Math.round(currentWord.interval * 1.2))} дн.`}
+            <span className="text-lg font-bold">Трудно</span>
+            <span className="text-xs text-muted-foreground mt-1">
+              {formatInterval(currentWord.repetition === 0 ? 5 : Math.max(1440, Math.round(currentWord.interval * 1.2)))}
             </span>
           </Button>
           <Button 
             variant="outline" 
-            className="h-20 flex flex-col items-center justify-center rounded-2xl border-2 border-primary/20 hover:border-primary hover:bg-primary/10 text-primary font-bold transition-all hover:scale-[1.02]"
+            className="h-20 flex flex-col items-center justify-center rounded-2xl border-2 border-primary/30 hover:border-primary hover:bg-primary/10 text-foreground transition-all hover:scale-[1.02]"
             onClick={() => handleReview(3)}
             disabled={loading}
           >
-            <span className="text-lg">Хорошо</span>
-            <span className="text-xs opacity-70 mt-1">
-              {currentWord.interval === 0 ? "3 дн." : `${Math.round(currentWord.interval * currentWord.easeFactor)} дн.`}
+            <span className="text-lg font-bold">Хорошо</span>
+            <span className="text-xs text-muted-foreground mt-1">
+              {formatInterval(currentWord.repetition === 0 ? 10 : currentWord.repetition === 1 ? 1440 : Math.max(1440, Math.round(currentWord.interval * currentWord.easeFactor)))}
             </span>
           </Button>
           <Button 
             variant="outline" 
-            className="h-20 flex flex-col items-center justify-center rounded-2xl border-2 border-blue-500/20 hover:border-blue-500 hover:bg-blue-500/10 text-blue-600 font-bold transition-all hover:scale-[1.02]"
+            className="h-20 flex flex-col items-center justify-center rounded-2xl border-2 border-blue-500/30 hover:border-blue-500 hover:bg-blue-500/10 text-foreground transition-all hover:scale-[1.02]"
             onClick={() => handleReview(4)}
             disabled={loading}
           >
-            <span className="text-lg">Легко</span>
-            <span className="text-xs opacity-70 mt-1">
-              {currentWord.interval === 0 ? "4 дн." : `${Math.round(currentWord.interval * currentWord.easeFactor * 1.3)} дн.`}
+            <span className="text-lg font-bold">Легко</span>
+            <span className="text-xs text-muted-foreground mt-1">
+              {formatInterval(currentWord.repetition <= 1 ? 5760 : Math.max(5760, Math.round(currentWord.interval * currentWord.easeFactor * 1.3)))}
             </span>
           </Button>
         </div>

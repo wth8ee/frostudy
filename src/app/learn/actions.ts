@@ -16,29 +16,41 @@ export async function submitReview(wordId: string, performanceRating: 1 | 2 | 3 
 
   let { interval, repetition, easeFactor } = word;
 
-
   if (performanceRating === 1) {
     repetition = 0;
-    interval = 1;
+    interval = 1; // 1 minute
     easeFactor = Math.max(1.3, easeFactor - 0.2);
   } else if (performanceRating === 2) {
-    interval = Math.max(1, Math.round(interval * 1.2));
+    if (repetition === 0) {
+      interval = 5;
+    } else {
+      interval = Math.max(1440, Math.round(interval * 1.2));
+    }
     easeFactor = Math.max(1.3, easeFactor - 0.15);
   } else if (performanceRating === 3) {
-    if (repetition === 0) interval = 1;
-    else if (repetition === 1) interval = 3;
-    else interval = Math.round(interval * easeFactor);
-    repetition += 1;
+    if (repetition === 0) {
+      interval = 10;
+      repetition = 1;
+    } else if (repetition === 1) {
+      interval = 1440; // 1 day
+      repetition = 2;
+    } else {
+      interval = Math.max(1440, Math.round(interval * easeFactor));
+      repetition += 1;
+    }
   } else if (performanceRating === 4) {
-    if (repetition === 0) interval = 4;
-    else if (repetition === 1) interval = 6;
-    else interval = Math.round(interval * easeFactor * 1.3);
+    if (repetition === 0 || repetition === 1) {
+      interval = 5760; // 4 days
+      repetition = 2;
+    } else {
+      interval = Math.max(5760, Math.round(interval * easeFactor * 1.3));
+      repetition += 1;
+    }
     easeFactor += 0.15;
-    repetition += 1;
   }
 
   const nextReview = new Date();
-  nextReview.setDate(nextReview.getDate() + interval);
+  nextReview.setTime(nextReview.getTime() + interval * 60 * 1000);
 
   const updatedWord = await prisma.word.update({
     where: { id: word.id },
