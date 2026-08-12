@@ -58,10 +58,6 @@ export default async function LearnPage() {
 
   return (
     <div className="flex flex-col flex-1 h-full max-h-[800px]">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Сеанс повторения</h1>
-        <p className="text-muted-foreground font-medium">Осталось {wordsToReview.length} слов</p>
-      </div>
       <StudySession words={wordsToReview} />
     </div>
   );

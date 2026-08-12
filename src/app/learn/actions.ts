@@ -22,26 +22,37 @@ export async function submitReview(wordId: string, performanceRating: 1 | 2 | 3 
     easeFactor = Math.max(1.3, easeFactor - 0.2);
   } else if (performanceRating === 2) {
     if (repetition === 0) {
-      interval = 5;
+      interval = 3;
+    } else if (repetition === 1) {
+      interval = 10;
     } else {
       interval = Math.max(1440, Math.round(interval * 1.2));
     }
     easeFactor = Math.max(1.3, easeFactor - 0.15);
   } else if (performanceRating === 3) {
     if (repetition === 0) {
-      interval = 10;
+      interval = 5;
       repetition = 1;
     } else if (repetition === 1) {
-      interval = 1440; // 1 day
+      interval = 15;
       repetition = 2;
+    } else if (repetition === 2) {
+      interval = 1440; // 1 day
+      repetition = 3;
     } else {
       interval = Math.max(1440, Math.round(interval * easeFactor));
       repetition += 1;
     }
   } else if (performanceRating === 4) {
-    if (repetition === 0 || repetition === 1) {
-      interval = 5760; // 4 days
+    if (repetition === 0) {
+      interval = 15;
       repetition = 2;
+    } else if (repetition === 1) {
+      interval = 1440; // 1 day
+      repetition = 3;
+    } else if (repetition === 2) {
+      interval = 4320; // 3 days
+      repetition = 4;
     } else {
       interval = Math.max(5760, Math.round(interval * easeFactor * 1.3));
       repetition += 1;

@@ -16,13 +16,14 @@ export function StudySession({ words }: StudySessionProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [queue, setQueue] = useState<Word[]>(words);
   const router = useRouter();
 
-  if (currentIndex >= words.length) {
+  if (currentIndex >= queue.length) {
     return (
       <div className="flex flex-col items-center justify-center flex-1 space-y-6">
         <h2 className="text-3xl font-bold">Сеанс завершен!</h2>
-        <p className="text-muted-foreground text-lg">Отличная работа. Вы повторили {words.length} слов(а).</p>
+        <p className="text-muted-foreground text-lg">Отличная работа. Вы повторили {new Set(queue.map(w => w.id)).size} слов(а).</p>
         <Button size="lg" className="rounded-xl font-bold h-12" onClick={() => router.refresh()}>
           Завершить
         </Button>
@@ -30,7 +31,7 @@ export function StudySession({ words }: StudySessionProps) {
     );
   }
 
-  const currentWord = words[currentIndex];
+  const currentWord = queue[currentIndex];
 
   const formatInterval = (minutes: number) => {
     if (minutes < 60) return `${Math.max(1, minutes)} мин`;
@@ -45,7 +46,10 @@ export function StudySession({ words }: StudySessionProps) {
   const handleReview = async (rating: 1 | 2 | 3 | 4) => {
     setLoading(true);
     try {
-      await submitReview(currentWord.id, rating);
+      const updatedWord = await submitReview(currentWord.id, rating);
+      if (updatedWord.interval < 1440) {
+        setQueue((prev) => [...prev, updatedWord]);
+      }
       setShowAnswer(false);
       setCurrentIndex((prev) => prev + 1);
     } catch (error) {
@@ -56,7 +60,12 @@ export function StudySession({ words }: StudySessionProps) {
   };
 
   return (
-    <div className="flex flex-col h-[60vh] max-h-[600px] w-full max-w-2xl mx-auto">
+    <>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Сеанс повторения</h1>
+        <p className="text-muted-foreground font-medium">Осталось {queue.length - currentIndex} слов</p>
+      </div>
+      <div className="flex flex-col h-[60vh] max-h-[600px] w-full max-w-2xl mx-auto">
       <Card className="flex-1 flex flex-col justify-center items-center text-center p-8 border-4 border-border/50 rounded-3xl shadow-sm relative overflow-hidden bg-card">
         {loading && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10">
@@ -81,7 +90,7 @@ export function StudySession({ words }: StudySessionProps) {
             )}
           </div>
         ) : (
-          <div className="w-full max-w-md animate-in fade-in duration-300 flex-1 flex flex-col justify-end pb-8">
+          <div className="w-full max-w-md animate-in fade-in duration-300 mt-8">
             <Button 
               size="lg" 
               className="w-full h-16 text-xl font-bold rounded-2xl shadow-[0_4px_0_var(--color-primary-shadow)] hover:translate-y-1 hover:shadow-[0_0px_0_var(--color-primary-shadow)] transition-all"
@@ -112,7 +121,7 @@ export function StudySession({ words }: StudySessionProps) {
           >
             <span className="text-lg font-bold">Трудно</span>
             <span className="text-xs text-muted-foreground mt-1">
-              {formatInterval(currentWord.repetition === 0 ? 5 : Math.max(1440, Math.round(currentWord.interval * 1.2)))}
+              {formatInterval(currentWord.repetition === 0 ? 3 : currentWord.repetition === 1 ? 10 : Math.max(1440, Math.round(currentWord.interval * 1.2)))}
             </span>
           </Button>
           <Button 
@@ -123,7 +132,7 @@ export function StudySession({ words }: StudySessionProps) {
           >
             <span className="text-lg font-bold">Хорошо</span>
             <span className="text-xs text-muted-foreground mt-1">
-              {formatInterval(currentWord.repetition === 0 ? 10 : currentWord.repetition === 1 ? 1440 : Math.max(1440, Math.round(currentWord.interval * currentWord.easeFactor)))}
+              {formatInterval(currentWord.repetition === 0 ? 5 : currentWord.repetition === 1 ? 15 : currentWord.repetition === 2 ? 1440 : Math.max(1440, Math.round(currentWord.interval * currentWord.easeFactor)))}
             </span>
           </Button>
           <Button 
@@ -134,11 +143,12 @@ export function StudySession({ words }: StudySessionProps) {
           >
             <span className="text-lg font-bold">Легко</span>
             <span className="text-xs text-muted-foreground mt-1">
-              {formatInterval(currentWord.repetition <= 1 ? 5760 : Math.max(5760, Math.round(currentWord.interval * currentWord.easeFactor * 1.3)))}
+              {formatInterval(currentWord.repetition === 0 ? 15 : currentWord.repetition === 1 ? 1440 : currentWord.repetition === 2 ? 4320 : Math.max(5760, Math.round(currentWord.interval * currentWord.easeFactor * 1.3)))}
             </span>
           </Button>
         </div>
       )}
     </div>
+    </>
   );
 }
